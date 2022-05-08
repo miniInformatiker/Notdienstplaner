@@ -58,7 +58,7 @@ var userManger = scope.ServiceProvider.GetRequiredService<UserManager<Applicatio
 
 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-ApplicationDbInitializer.SeedUsers(context, userManger);
+DbInitializer.SeedUsers(context, userManger);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
