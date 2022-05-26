@@ -56,7 +56,7 @@ def token_required(f):
     return decorator
 
 
-@app.route('/items/<id>', methods=['GET'])
+@app.route('/pharmacies/<id>', methods=['GET'])
 def get_pharmacy(id):
     item = Pharmacy.query.get(id)
     del item.__dict__['_sa_instance_state']
@@ -66,33 +66,35 @@ def get_pharmacy(id):
 @app.route('/pharmacies', methods=['GET'])
 @token_required
 def get_Pharmacies(current_user):
-    items = []
+    pharmacies = []
     for item in db.session.query(Pharmacy).all():
         del item.__dict__['_sa_instance_state']
-        items.append(item.__dict__)
-    return jsonify(items)
+        pharmacies.append(item.__dict__)
+    return jsonify(pharmacies)
 
 
-@app.route('/items', methods=['POST'])
+@app.route('/pharmacies', methods=['POST'])
 def create_item():
     body = request.get_json()
-    db.session.add(Pharmacy(body['title'], body['content']))
+    db.session.add(Pharmacy(name=body['name'], email=body['email'], phone=body['phone'], place=body['place'],
+                            street=body['street'], houseNumber=body['houseNumber'], postcode=body['postcode']))
     db.session.commit()
     return "item created"
 
 
-@app.route('/items/<id>', methods=['PUT'])
+@app.route('/pharmacies/<id>', methods=['PUT'])
 def update_item(id):
     body = request.get_json()
-    db.session.query(Item).filter_by(id=id).update(
-        dict(title=body['title'], content=body['content']))
+    db.session.query(Pharmacy).filter_by(id=id).update(
+        dict(name=body['name'], email=body['email'], phone=body['phone'], place=body['place'],
+             street=body['street'], houseNumber=body['houseNumber'], postcode=body['postcode']))
     db.session.commit()
     return "item updated"
 
 
-@app.route('/items/<id>', methods=['DELETE'])
+@app.route('/pharmacies/<id>', methods=['DELETE'])
 def delete_item(id):
-    db.session.query(Item).filter_by(id=id).delete()
+    db.session.query(Pharmacy).filter_by(id=id).delete()
     db.session.commit()
     return "item deleted"
 
