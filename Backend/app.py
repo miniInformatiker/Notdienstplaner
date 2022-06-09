@@ -1,39 +1,20 @@
 from datetime import datetime, timedelta
-
 from functools import wraps
 import jwt
 from flask import Flask, request, jsonify, make_response
-from flask_sqlalchemy import SQLAlchemy
-import os
-
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
+from . import db, app
+from .model.Pharmacy import Pharmacy
+from .routes.pharmacy import pharmacy_controller
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '004f2af45d3a4e161a7dd2d17fdae47f'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-db = SQLAlchemy(app)
-
+app.register_blueprint(pharmacy_controller)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(80))
     name = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(150))
-
-
-class Pharmacy(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(80))
-    phone = db.Column(db.String(80))
-    place = db.Column(db.String(80))
-    street = db.Column(db.String(80))
-    houseNumber = db.Column(db.Integer)
-    postcode = db.Column(db.Integer)
-
-
-db.create_all()
 
 
 def token_required(f):
@@ -54,13 +35,6 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorator
-
-
-@app.route('/pharmacies/<id>', methods=['GET'])
-def get_pharmacy(id):
-    item = Pharmacy.query.get(id)
-    del item.__dict__['_sa_instance_state']
-    return jsonify(item.__dict__)
 
 
 @app.route('/pharmacies', methods=['GET'])
