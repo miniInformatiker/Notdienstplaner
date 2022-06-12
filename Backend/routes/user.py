@@ -9,11 +9,7 @@ def get_all_users():
     users = User.query.all()
     result = []
     for user in users:
-        user_data = {}
-        user_data['public_id'] = user.public_id
-        user_data['name'] = user.name
-        user_data['password'] = user.password
-        user_data['admin'] = user.admin
+        user_data = {'public_id': user.public_id, 'name': user.name, 'password': user.password, 'admin': user.admin}
 
         result.append(user_data)
     return jsonify({'users': result})
